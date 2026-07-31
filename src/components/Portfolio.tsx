@@ -14,7 +14,7 @@ import Image from "next/image";
 
 const tabs = [
   { id: "about", label: "About" },
-  { id: "resume", label: "Resume" },
+  { id: "resume", label: "Resume/CV" },
   { id: "works", label: "Works" },
   { id: "blog", label: "Blog" },
   { id: "contact", label: "Contact" },

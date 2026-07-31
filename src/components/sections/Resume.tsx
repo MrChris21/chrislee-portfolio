@@ -38,7 +38,7 @@ export default function Resume() {
   return (
     <div className="fade-in space-y-12">
       <section>
-        <h2 className="section-title">Resume</h2>
+        <h2 className="section-title">Resume/CV</h2>
         <div className="mt-8 grid gap-10 lg:grid-cols-2">
           <div>
             <h3 className="mb-6 flex items-center gap-2 text-lg font-semibold text-white">
