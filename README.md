@@ -38,8 +38,18 @@ npm start
 
 Connected to **GitHub** and **Vercel**. Custom domain: `chrislee.site` (point DNS to Vercel).
 
-## Project location
+## Project location (always)
 
-Always keep this app in:
+**Always save and edit this project only in this folder:**
 
-`My Portfolio:VC/portfolio-app`
+```
+/Users/saint_chris/Documents/Files/My Portfolio:VC/portfolio-app
+```
+
+Parent folder (backups, logos, WordPress extract):
+
+```
+/Users/saint_chris/Documents/Files/My Portfolio:VC
+```
+
+Do not move the app to another path. All future changes, installs, builds, and deploys should use `portfolio-app` inside this project folder.
