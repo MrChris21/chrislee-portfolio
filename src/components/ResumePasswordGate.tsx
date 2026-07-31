@@ -1,9 +1,9 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 
-const STORAGE_KEY = "resume_cv_unlocked";
 // Soft client-side gate (not server security). Password: 1921@
+// Unlock is in-memory only — cleared on refresh / reopen.
 const RESUME_PASSWORD = "1921@";
 
 export default function ResumePasswordGate({
@@ -12,21 +12,9 @@ export default function ResumePasswordGate({
   children: React.ReactNode;
 }) {
   const [unlocked, setUnlocked] = useState(false);
-  const [ready, setReady] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem(STORAGE_KEY) === "1") {
-        setUnlocked(true);
-      }
-    } catch {
-      /* ignore */
-    }
-    setReady(true);
-  }, []);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -34,22 +22,9 @@ export default function ResumePasswordGate({
       setUnlocked(true);
       setError("");
       setPassword("");
-      try {
-        sessionStorage.setItem(STORAGE_KEY, "1");
-      } catch {
-        /* ignore */
-      }
       return;
     }
     setError("Incorrect password. Please try again.");
-  }
-
-  if (!ready) {
-    return (
-      <div className="flex min-h-[240px] items-center justify-center text-sm text-[var(--muted)]">
-        Loading…
-      </div>
-    );
   }
 
   if (unlocked) {
