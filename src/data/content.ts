@@ -113,7 +113,7 @@ export const tools = [
   { name: "Replit", image: "/tools/replit.svg", url: "https://replit.com/" },
   {
     name: "Cursor AI",
-    image: "/tools/cursor.svg",
+    image: "/tools/cursor.png",
     url: "https://cursor.com/",
   },
   {
