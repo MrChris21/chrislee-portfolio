@@ -7,6 +7,7 @@ import Resume from "./sections/Resume";
 import Works from "./sections/Works";
 import Blog from "./sections/Blog";
 import Contact from "./sections/Contact";
+import ResumePasswordGate from "./ResumePasswordGate";
 import { IconClose, IconMenu } from "./Icons";
 import BinaryRain from "./BinaryRain";
 import { site } from "@/data/content";
@@ -145,7 +146,11 @@ export default function Portfolio() {
             {/* Content */}
             <div className="p-5 md:p-8 lg:p-10">
               {active === "about" && <About />}
-              {active === "resume" && <Resume />}
+              {active === "resume" && (
+                <ResumePasswordGate>
+                  <Resume />
+                </ResumePasswordGate>
+              )}
               {active === "works" && <Works />}
               {active === "blog" && <Blog />}
               {active === "contact" && <Contact />}
