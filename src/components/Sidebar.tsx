@@ -58,7 +58,7 @@ export default function Sidebar({
       className={`flex flex-col items-center text-center ${
         compact
           ? "w-full p-6"
-          : "sticky top-8 w-full max-w-[300px] rounded-2xl border border-[var(--border)] bg-[var(--card)] p-7 shadow-2xl"
+          : "w-full max-w-[300px] rounded-2xl border border-[var(--border)] bg-[var(--card)] p-7 shadow-2xl"
       }`}
     >
       <div className="relative mb-5">

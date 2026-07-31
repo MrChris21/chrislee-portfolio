@@ -29,11 +29,17 @@ export default function Portfolio() {
   function goTo(tab: TabId) {
     setActive(tab);
     setMobileOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Scroll only the main content panel (desktop) or window (mobile)
+    const panel = document.getElementById("main-scroll");
+    if (panel) {
+      panel.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
+    <div className="relative min-h-screen overflow-x-hidden lg:h-screen lg:overflow-hidden">
       {/* Binary matrix rain + soft gold glows */}
       <BinaryRain />
       <div className="pointer-events-none fixed inset-0 -z-10">
@@ -65,7 +71,10 @@ export default function Portfolio() {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-30 bg-black/70 lg:hidden" onClick={() => setMobileOpen(false)}>
+        <div
+          className="fixed inset-0 z-30 bg-black/70 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        >
           <div
             className="absolute right-0 top-0 h-full w-[min(320px,85vw)] overflow-y-auto border-l border-[var(--border)] bg-[var(--card)] p-4"
             onClick={(e) => e.stopPropagation()}
@@ -91,17 +100,26 @@ export default function Portfolio() {
         </div>
       )}
 
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6 md:py-10 lg:flex-row lg:items-start lg:gap-8 lg:px-6">
-        {/* Desktop sidebar */}
-        <div className="hidden shrink-0 lg:block">
-          <Sidebar onContact={() => goTo("contact")} />
-        </div>
+      {/*
+        Desktop: fixed-height row — profile stays put, main content scrolls.
+        Mobile: normal document flow.
+      */}
+      <div className="mx-auto flex h-full max-w-6xl flex-col gap-6 px-4 py-6 md:py-10 lg:flex-row lg:items-stretch lg:gap-8 lg:overflow-hidden lg:px-6 lg:py-8">
+        {/* Desktop profile — fixed in place (does not scroll with content) */}
+        <aside className="hidden shrink-0 lg:flex lg:w-[300px] lg:flex-col lg:self-start">
+          <div className="w-full max-w-[300px]">
+            <Sidebar onContact={() => goTo("contact")} />
+          </div>
+        </aside>
 
-        {/* Main panel */}
-        <main className="min-w-0 flex-1">
+        {/* Main panel — independent scroll on desktop */}
+        <main
+          id="main-scroll"
+          className="min-w-0 flex-1 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
+        >
           <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-2xl">
-            {/* Desktop tabs */}
-            <nav className="hidden border-b border-[var(--border)] lg:block">
+            {/* Tabs stay at top of the scrolling panel */}
+            <nav className="sticky top-0 z-10 hidden border-b border-[var(--border)] bg-[var(--card)]/95 backdrop-blur-md lg:block">
               <ul className="flex flex-wrap">
                 {tabs.map((t) => (
                   <li key={t.id}>
@@ -135,7 +153,8 @@ export default function Portfolio() {
           </div>
 
           <footer className="mt-6 pb-4 text-center text-xs text-[var(--muted)]">
-            © {new Date().getFullYear()} {site.name}. Built with Next.js · Deployed on Vercel.
+            © {new Date().getFullYear()} {site.name}. Built with Next.js · Deployed
+            on Vercel.
           </footer>
         </main>
       </div>
