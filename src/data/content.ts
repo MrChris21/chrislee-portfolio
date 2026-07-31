@@ -197,11 +197,11 @@ export const education = [
 ];
 
 export const codingSkills = [
-  { label: "HTML / CSS", progress: 95 },
+  { label: "Next.js / React", progress: 95 },
+  { label: "TypeScript / JavaScript", progress: 92 },
+  { label: "HTML / CSS / Tailwind", progress: 95 },
   { label: "WordPress", progress: 90 },
-  { label: "Angular / JavaScript", progress: 85 },
-  { label: "PHP / MySQL", progress: 75 },
-  { label: "jQuery", progress: 75 },
+  { label: "Node.js / APIs", progress: 85 },
 ];
 
 export const knowledge = [
@@ -217,6 +217,68 @@ export const knowledge = [
   "Photoshop",
   "Microsoft Office",
   "Figma",
+];
+
+/** Full technical skill matrix shown on the Resume / CV tab */
+export const technicalSkills: { category: string; skills: string[] }[] = [
+  {
+    category: "Frontend",
+    skills: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "JavaScript (ES6+)",
+      "Tailwind CSS",
+      "HTML5 / CSS3",
+    ],
+  },
+  {
+    category: "Backend",
+    skills: [
+      "Node.js",
+      "Next.js API Routes",
+      "Express.js",
+      "RESTful APIs",
+    ],
+  },
+  {
+    category: "Database & Backend Services",
+    skills: [
+      "MongoDB",
+      "Firebase",
+      "Supabase",
+      "PostgreSQL",
+      "Authentication (NextAuth, Firebase Auth)",
+    ],
+  },
+  {
+    category: "AI & Integration",
+    skills: [
+      "AI Integration (xAI Grok / OpenAI / Claude)",
+      "Video Transcription & AI Features",
+      "Building AI-powered educational tools",
+    ],
+  },
+  {
+    category: "Tools & Platforms",
+    skills: [
+      "Git & GitHub",
+      "VS Code",
+      "Replit",
+      "pnpm / npm",
+      "Vercel / Cloudflare / GitHub Pages",
+      "Figma (to code)",
+    ],
+  },
+  {
+    category: "Other Relevant Skills",
+    skills: [
+      "SaaS Development (subscriptions, payments)",
+      "Payment Integration (Stripe, Tap Payments)",
+      "Building educational platforms (attendance systems, learning trackers, video call features)",
+      "Responsive & mobile-first design",
+    ],
+  },
 ];
 
 export const languages = [

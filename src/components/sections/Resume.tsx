@@ -1,4 +1,11 @@
-import { codingSkills, education, experience, knowledge, languages } from "@/data/content";
+import {
+  codingSkills,
+  education,
+  experience,
+  knowledge,
+  languages,
+  technicalSkills,
+} from "@/data/content";
 import { IconCheck } from "../Icons";
 
 function Timeline({
@@ -45,6 +52,30 @@ export default function Resume() {
             </h3>
             <Timeline items={education} />
           </div>
+        </div>
+      </section>
+
+      {/* Technical Skills */}
+      <section>
+        <h2 className="section-title">Technical Skills</h2>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          {technicalSkills.map((group) => (
+            <div key={group.category} className="card">
+              <h3 className="mb-4 text-base font-semibold text-[var(--accent)]">
+                {group.category}
+              </h3>
+              <ul className="flex flex-wrap gap-2">
+                {group.skills.map((skill) => (
+                  <li
+                    key={skill}
+                    className="rounded-full border border-[var(--border)] bg-[var(--card-soft)] px-3 py-1.5 text-xs font-medium text-[var(--muted)] transition hover:border-[var(--accent)]/50 hover:text-white sm:text-sm"
+                  >
+                    {skill}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </section>
 
