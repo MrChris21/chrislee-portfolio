@@ -8,6 +8,7 @@ import Works from "./sections/Works";
 import Blog from "./sections/Blog";
 import Contact from "./sections/Contact";
 import { IconClose, IconMenu } from "./Icons";
+import BinaryRain from "./BinaryRain";
 import { site } from "@/data/content";
 import Image from "next/image";
 
@@ -33,7 +34,8 @@ export default function Portfolio() {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      {/* Background accents */}
+      {/* Binary matrix rain + soft gold glows */}
+      <BinaryRain />
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute left-[-10%] top-[-10%] h-[40vw] w-[40vw] rounded-full bg-[var(--accent)]/5 blur-3xl" />
         <div className="absolute bottom-[-10%] right-[-10%] h-[35vw] w-[35vw] rounded-full bg-[var(--accent)]/5 blur-3xl" />

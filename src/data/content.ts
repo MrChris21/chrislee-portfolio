@@ -153,25 +153,25 @@ export const experience = [
     years: "2024 – Present",
     title: "Freelance Web Developer",
     subtitle: "Remote",
-    text: "Took advanced courses in web design, development, and management. Built and improved client websites by applying professional development skills and years of experience.",
+    text: "Took an online course to learn more about web design/developing and management, and successfully finished the course.\n\nDeveloped a website for a Client by applying the skill received from the course and years of experience as a web developer, which resulted in the improvement of the website.",
   },
   {
     years: "2023 – Present",
     title: "Assistant Teacher — Cinematography / Photography",
     subtitle: "Jeddah Knowledge International School",
-    text: "Support lead instructors in delivering lessons, workshops, and hands-on activities in cinematography and photography. Provide students with technical guidance on cameras and editing software.",
+    text: "Assist in teaching: Support lead instructors in delivering lessons, workshops, and hands-on activities in cinematography, photography.\n\nTechnical Guidance: Provide students with technical assistance in using cameras, editing software.",
   },
   {
     years: "2023 – Present",
     title: "Resource Clerk",
     subtitle: "Jeddah Knowledge International School",
-    text: "Maintain and organize the resource room inventory. Coordinate book ordering and manage check-in/check-out records for accurate tracking of materials.",
+    text: "Inventory Management: Maintain and organize the resource room's book inventory, ensuring all materials are accurately recorded and readily accessible.\n\nBook Ordering: Coordinate with school staff to identify required books and place timely orders.\n\nCheck-In/Check-Out Records: Manage the loan process for students, recording the check-in and check-out of books to ensure accurate tracking.",
   },
   {
     years: "2023 – Present",
-    title: "Customer Care Clerk — RFID",
+    title: "Customer Care Clerk at SLEX IETC RFID (Radio-frequency identification)",
     subtitle: "SLEX IETC",
-    text: "Assist motorists with RFID inquiries, account management, installations, reloading, and troubleshooting. Deliver excellent frontline customer service for seamless tollway operations.",
+    text: "A dedicated and service-oriented professional responsible for assisting motorists and clients with RFID (Radio-Frequency Identification) inquiries, account management, and troubleshooting at South Luzon Expressway (SLEX) IETC. Ensures smooth customer transactions by providing timely and accurate information, processing RFID installations and reloading services, and resolving customer concerns efficiently.\n\nActs as a frontliner in delivering excellent customer service while upholding company standards and promoting seamless tollway operations.",
   },
 ];
 
@@ -192,7 +192,7 @@ export const education = [
     years: "2017 – 2018",
     title: "CSS NCII (Computer System Servicing)",
     subtitle: "Philippines",
-    text: "Computer installation, maintenance, repair, basic networking, and troubleshooting.",
+    text: "Is designed to develop knowledge, skills, and attitudes in computer installation, maintenance, and repair, including basic networking and troubleshooting.",
   },
 ];
 

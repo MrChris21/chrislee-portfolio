@@ -18,7 +18,9 @@ function Timeline({
           {item.subtitle && (
             <p className="text-sm text-[var(--muted)]">{item.subtitle}</p>
           )}
-          <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{item.text}</p>
+          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-[var(--muted)]">
+            {item.text}
+          </p>
         </div>
       ))}
     </div>
