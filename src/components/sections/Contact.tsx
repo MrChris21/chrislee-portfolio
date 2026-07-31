@@ -5,21 +5,49 @@ import { products, site } from "@/data/content";
 import { IconMail, IconMapPin, IconPhone } from "../Icons";
 import Image from "next/image";
 
-export default function Contact() {
-  const [status, setStatus] = useState<"idle" | "sent">("idle");
+type Status = "idle" | "sending" | "sent" | "error";
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+export default function Contact() {
+  const [status, setStatus] = useState<Status>("idle");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
-    const name = String(data.get("name") || "");
-    const email = String(data.get("email") || "");
-    const message = String(data.get("message") || "");
-    const subject = encodeURIComponent(`Portfolio contact from ${name}`);
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-    window.location.href = `mailto:${site.email}?subject=${subject}&body=${body}`;
-    setStatus("sent");
-    form.reset();
+
+    const payload = {
+      name: String(data.get("name") || "").trim(),
+      email: String(data.get("email") || "").trim(),
+      message: String(data.get("message") || "").trim(),
+      website: String(data.get("website") || "").trim(), // honeypot
+    };
+
+    setStatus("sending");
+    setError("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = (await res.json()) as { ok?: boolean; error?: string };
+
+      if (!res.ok || !json.ok) {
+        setStatus("error");
+        setError(json.error || "Failed to send message. Please try again.");
+        return;
+      }
+
+      setStatus("sent");
+      form.reset();
+    } catch {
+      setStatus("error");
+      setError(
+        "Network error. Please try again or email christopherlee812@gmail.com."
+      );
+    }
   }
 
   return (
@@ -30,9 +58,18 @@ export default function Contact() {
           <div className="space-y-4">
             {[
               { icon: <IconMapPin />, label: "Address", value: site.residence },
-              { icon: <IconMail />, label: "Email", value: site.email, href: `mailto:${site.email}` },
+              {
+                icon: <IconMail />,
+                label: "Email",
+                value: site.email,
+                href: `mailto:${site.email}`,
+              },
               { icon: <IconPhone />, label: "Phone", value: site.phone },
-              { icon: <span className="text-lg">✨</span>, label: "Freelance", value: site.freelance },
+              {
+                icon: <span className="text-lg">✨</span>,
+                label: "Freelance",
+                value: site.freelance,
+              },
             ].map((item) => (
               <div
                 key={item.label}
@@ -60,6 +97,23 @@ export default function Contact() {
 
           <form onSubmit={handleSubmit} className="card space-y-4">
             <h3 className="text-lg font-semibold text-white">Contact Form</h3>
+            <p className="text-xs text-[var(--muted)]">
+              Messages are sent to{" "}
+              <span className="text-[var(--accent)]">christopherlee812@gmail.com</span>
+            </p>
+
+            {/* Honeypot — hidden from users */}
+            <div className="absolute -left-[9999px] opacity-0" aria-hidden>
+              <label htmlFor="website">Website</label>
+              <input
+                id="website"
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
             <div>
               <label htmlFor="name" className="mb-1.5 block text-xs text-[var(--muted)]">
                 Name
@@ -68,7 +122,8 @@ export default function Contact() {
                 id="name"
                 name="name"
                 required
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)]"
+                disabled={status === "sending"}
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)] disabled:opacity-60"
                 placeholder="Your name"
               />
             </div>
@@ -81,12 +136,16 @@ export default function Contact() {
                 name="email"
                 type="email"
                 required
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)]"
+                disabled={status === "sending"}
+                className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)] disabled:opacity-60"
                 placeholder="you@email.com"
               />
             </div>
             <div>
-              <label htmlFor="message" className="mb-1.5 block text-xs text-[var(--muted)]">
+              <label
+                htmlFor="message"
+                className="mb-1.5 block text-xs text-[var(--muted)]"
+              >
                 Message
               </label>
               <textarea
@@ -94,16 +153,27 @@ export default function Contact() {
                 name="message"
                 required
                 rows={5}
-                className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)]"
+                disabled={status === "sending"}
+                className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--accent)] disabled:opacity-60"
                 placeholder="How can I help?"
               />
             </div>
-            <button type="submit" className="btn-primary w-full">
-              Send Message
+            <button
+              type="submit"
+              disabled={status === "sending"}
+              className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {status === "sending" ? "Sending…" : "Send Message"}
             </button>
+
             {status === "sent" && (
               <p className="text-center text-sm text-emerald-400">
-                Opening your email client… thank you!
+                Message sent successfully! I&apos;ll get back to you soon.
+              </p>
+            )}
+            {status === "error" && (
+              <p className="text-center text-sm text-red-400" role="alert">
+                {error}
               </p>
             )}
           </form>
