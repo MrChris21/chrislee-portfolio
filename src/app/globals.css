@@ -68,7 +68,7 @@ body {
   }
 
   .card {
-    @apply rounded-2xl border border-[var(--border)] bg-[var(--card)]/95 p-5 md:p-6 backdrop-blur-sm;
+    @apply rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 md:p-6;
   }
 
   .btn-primary {
