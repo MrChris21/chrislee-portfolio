@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Visual Studio Code">
+  <title>Visual Studio Code</title>
+  <rect width="64" height="64" rx="14" fill="#1a1a1a"/>
+  <!-- Classic VS Code ribbon icon -->
+  <g transform="translate(8,8)">
+    <path fill="#007ACC" d="M44.61 11.21 34.28 1.74a2.2 2.2 0 0 0-2.48.2L5.05 23.15a1.7 1.7 0 0 0-.05 2.55l6.66 6.05-6.66 6.05a1.7 1.7 0 0 0 .05 2.55l26.75 21.21a2.2 2.2 0 0 0 2.48.2l10.33-9.47a2 2 0 0 0 .75-1.55V12.76a2 2 0 0 0-.75-1.55zM32.2 40.9 16.9 27.75 32.2 14.6v26.3zm2.95 4.55v-5.2l7.1 5.9-7.1-.7zm0-31.7 7.1-.7-7.1 5.9v-5.2z"/>
+  </g>
+</svg>

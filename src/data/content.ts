@@ -116,6 +116,11 @@ export const tools = [
     image: "/tools/cursor.svg",
     url: "https://cursor.com/",
   },
+  {
+    name: "Visual Studio Code",
+    image: "/tools/vscode.svg",
+    url: "https://code.visualstudio.com/",
+  },
   { name: "Figma", image: "/tools/figma.png", url: "https://www.figma.com/" },
   {
     name: "WordPress",
