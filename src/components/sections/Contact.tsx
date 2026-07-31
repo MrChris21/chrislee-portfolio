@@ -97,10 +97,6 @@ export default function Contact() {
 
           <form onSubmit={handleSubmit} className="card space-y-4">
             <h3 className="text-lg font-semibold text-white">Contact Form</h3>
-            <p className="text-xs text-[var(--muted)]">
-              Messages are sent to{" "}
-              <span className="text-[var(--accent)]">christopherlee812@gmail.com</span>
-            </p>
 
             {/* Honeypot — hidden from users */}
             <div className="absolute -left-[9999px] opacity-0" aria-hidden>
