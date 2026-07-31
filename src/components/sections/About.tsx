@@ -115,7 +115,14 @@ export default function About() {
               className="card flex flex-col items-center gap-3 p-4 text-center transition hover:border-[var(--accent)]/50"
             >
               <div className="relative h-14 w-14">
-                <Image src={t.image} alt={t.name} fill className="object-contain" sizes="56px" />
+                <Image
+                  src={t.image}
+                  alt={t.name}
+                  fill
+                  className="object-contain"
+                  sizes="56px"
+                  unoptimized={t.image.endsWith(".svg")}
+                />
               </div>
               <span className="text-xs font-medium text-[var(--muted)]">{t.name}</span>
             </a>

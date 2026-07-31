@@ -109,6 +109,13 @@ export const tools = [
     url: "https://www.adobe.com/products/photoshop-lightroom.html",
   },
   { name: "ChatGPT", image: "/tools/chatgpt.png", url: "https://chatgpt.com/" },
+  { name: "Grok", image: "/tools/grok.svg", url: "https://grok.com/" },
+  { name: "Replit", image: "/tools/replit.svg", url: "https://replit.com/" },
+  {
+    name: "Cursor AI",
+    image: "/tools/cursor.svg",
+    url: "https://cursor.com/",
+  },
   { name: "Figma", image: "/tools/figma.png", url: "https://www.figma.com/" },
   {
     name: "WordPress",

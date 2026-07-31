@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Cursor AI">
+  <title>Cursor AI</title>
+  <rect width="64" height="64" rx="14" fill="#1a1a1a"/>
+  <g transform="translate(12,10) scale(1.65)">
+    <path fill="#FFFFFF" d="M11.503.131 1.891 5.678a.84.84 0 0 0-.42.726v11.188c0 .3.162.575.42.724l9.609 5.55a1.4 1.4 0 0 0 1.398 0l9.61-5.55a.84.84 0 0 0 .42-.724V6.404a.84.84 0 0 0-.42-.726L12.901.13a1.4 1.4 0 0 0-1.398 0"/>
+  </g>
+</svg>
