@@ -9,72 +9,46 @@ type Status = "idle" | "sending" | "sent" | "error" | "activation";
 
 const TO_EMAIL = "christopherlee812@gmail.com";
 
+function isActivationMessage(msg: string) {
+  const m = msg.toLowerCase();
+  return m.includes("activation") || m.includes("activate form");
+}
+
+function isSuccessMessage(success: unknown, msg: string) {
+  const m = msg.toLowerCase();
+  return (
+    success === true ||
+    success === "true" ||
+    m.includes("successfully") ||
+    m.includes("form was submitted")
+  );
+}
+
 export default function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
-
-  async function sendClientFormSubmit(payload: {
-    name: string;
-    email: string;
-    message: string;
-  }) {
-    const res = await fetch(`https://formsubmit.co/ajax/${TO_EMAIL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        name: payload.name,
-        email: payload.email,
-        message: payload.message,
-        _subject: `Portfolio contact from ${payload.name}`,
-        _replyto: payload.email,
-        _template: "table",
-        _captcha: "false",
-      }),
-    });
-    return (await res.json().catch(() => ({}))) as {
-      success?: string | boolean;
-      message?: string;
-    };
-  }
-
-  async function sendApi(payload: {
-    name: string;
-    email: string;
-    message: string;
-    website: string;
-  }) {
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    return (await res.json()) as {
-      ok?: boolean;
-      error?: string;
-      needsActivation?: boolean;
-      message?: string;
-    };
-  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
 
-    const payload = {
-      name: String(data.get("name") || "").trim(),
-      email: String(data.get("email") || "").trim(),
-      message: String(data.get("message") || "").trim(),
-      website: String(data.get("website") || "").trim(),
-    };
+    const name = String(data.get("name") || "").trim();
+    const email = String(data.get("email") || "").trim();
+    const message = String(data.get("message") || "").trim();
+    const website = String(data.get("website") || "").trim();
 
-    if (payload.website) {
+    // Honeypot
+    if (website) {
       setStatus("sent");
       form.reset();
+      return;
+    }
+
+    if (!name || !email || !message) {
+      setStatus("error");
+      setError("Please fill in all fields.");
       return;
     }
 
@@ -83,39 +57,74 @@ export default function Contact() {
     setInfo("");
 
     try {
-      // Primary: browser → FormSubmit (best for free tier)
-      const fs = await sendClientFormSubmit(payload);
-      const fsMsg = String(fs.message || "").toLowerCase();
+      // Browser → FormSubmit only (server-side is blocked by Cloudflare)
+      const res = await fetch(`https://formsubmit.co/ajax/${TO_EMAIL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          _subject: `Portfolio contact from ${name}`,
+          _replyto: email,
+          _template: "table",
+          _captcha: "false",
+        }),
+      });
 
-      if (fsMsg.includes("activation") || fsMsg.includes("activate form")) {
+      const text = await res.text();
+      let parsed: { success?: string | boolean; message?: string } = {};
+      try {
+        parsed = JSON.parse(text) as typeof parsed;
+      } catch {
+        // Cloudflare challenge or non-JSON
+        if (text.includes("Just a moment") || text.includes("cloudflare")) {
+          // Fallback: open mailto so the user can still reach you
+          const subject = encodeURIComponent(`Portfolio contact from ${name}`);
+          const body = encodeURIComponent(
+            `Name: ${name}\nEmail: ${email}\n\n${message}`
+          );
+          window.location.href = `mailto:${TO_EMAIL}?subject=${subject}&body=${body}`;
+          setStatus("sent");
+          setInfo(
+            "Opened your email app as a backup. You can also email me directly."
+          );
+          form.reset();
+          return;
+        }
+        parsed = { message: text.slice(0, 200) };
+      }
+
+      const msg = String(parsed.message || "");
+
+      if (isActivationMessage(msg)) {
         setStatus("activation");
         setInfo(
-          "Check Gmail (and Spam) for a FormSubmit email, then click Activate Form. After that, try sending again."
+          "Check Gmail (and Spam) for FormSubmit, then click Activate Form. After that, messages send automatically."
         );
         return;
       }
 
-      if (
-        fs.success === true ||
-        fs.success === "true" ||
-        fsMsg.includes("successfully")
-      ) {
-        setStatus("sent");
-        form.reset();
-        return;
-      }
-
-      // Fallback: our API route
-      const api = await sendApi(payload);
-      if (api.needsActivation) {
-        setStatus("activation");
-        setInfo(
-          api.message ||
-            "Check Gmail for a FormSubmit activation link, then try again."
-        );
-        return;
-      }
-      if (api.ok) {
+      if (isSuccessMessage(parsed.success, msg) || res.ok) {
+        // FormSubmit sometimes returns success:false with ok body after activation pending
+        if (parsed.success === false || parsed.success === "false") {
+          if (isActivationMessage(msg)) {
+            setStatus("activation");
+            setInfo(
+              "Check Gmail for FormSubmit and click Activate Form, then try again."
+            );
+            return;
+          }
+          setStatus("error");
+          setError(
+            msg ||
+              "Could not send yet. If this is the first time, activate FormSubmit from your Gmail."
+          );
+          return;
+        }
         setStatus("sent");
         form.reset();
         return;
@@ -123,32 +132,19 @@ export default function Contact() {
 
       setStatus("error");
       setError(
-        api.error ||
-          fs.message ||
-          "Could not send. Check Gmail for a FormSubmit activation email, click Activate Form, then try again."
+        msg ||
+          "Could not send. Please try again, or email christopherlee812@gmail.com."
       );
     } catch {
-      try {
-        const api = await sendApi(payload);
-        if (api.needsActivation) {
-          setStatus("activation");
-          setInfo(
-            api.message ||
-              "Check Gmail for a FormSubmit activation link, then try again."
-          );
-          return;
-        }
-        if (api.ok) {
-          setStatus("sent");
-          form.reset();
-          return;
-        }
-        setStatus("error");
-        setError(api.error || "Failed to send. Please try again.");
-      } catch {
-        setStatus("error");
-        setError("Network error. Please try again.");
-      }
+      // Network failure → mailto fallback
+      const subject = encodeURIComponent(`Portfolio contact from ${name}`);
+      const body = encodeURIComponent(
+        `Name: ${name}\nEmail: ${email}\n\n${message}`
+      );
+      window.location.href = `mailto:${TO_EMAIL}?subject=${subject}&body=${body}`;
+      setStatus("sent");
+      setInfo("Opened your email app as a backup so the message is not lost.");
+      form.reset();
     }
   }
 
@@ -268,7 +264,8 @@ export default function Contact() {
 
             {status === "sent" && (
               <p className="text-center text-sm text-emerald-400">
-                Message sent successfully! I&apos;ll get back to you soon.
+                {info ||
+                  "Message sent successfully! I'll get back to you soon."}
               </p>
             )}
             {status === "activation" && (
