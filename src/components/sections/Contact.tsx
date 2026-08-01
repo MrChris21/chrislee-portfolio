@@ -5,11 +5,63 @@ import { products, site } from "@/data/content";
 import { IconMail, IconMapPin, IconPhone } from "../Icons";
 import Image from "next/image";
 
-type Status = "idle" | "sending" | "sent" | "error";
+type Status = "idle" | "sending" | "sent" | "error" | "activation";
+
+const TO_EMAIL = "christopherlee812@gmail.com";
 
 export default function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
+
+  async function sendViaFormSubmit(payload: {
+    name: string;
+    email: string;
+    message: string;
+  }) {
+    // Client-side FormSubmit works best (browser Origin)
+    const res = await fetch(`https://formsubmit.co/ajax/${TO_EMAIL}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        name: payload.name,
+        email: payload.email,
+        message: payload.message,
+        _subject: `Portfolio contact from ${payload.name}`,
+        _replyto: payload.email,
+        _template: "table",
+        _captcha: "false",
+      }),
+    });
+
+    const data = (await res.json().catch(() => ({}))) as {
+      success?: string | boolean;
+      message?: string;
+    };
+    return data;
+  }
+
+  async function sendViaApi(payload: {
+    name: string;
+    email: string;
+    message: string;
+    website: string;
+  }) {
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    return (await res.json()) as {
+      ok?: boolean;
+      error?: string;
+      needsActivation?: boolean;
+      message?: string;
+    };
+  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -20,33 +72,90 @@ export default function Contact() {
       name: String(data.get("name") || "").trim(),
       email: String(data.get("email") || "").trim(),
       message: String(data.get("message") || "").trim(),
-      website: String(data.get("website") || "").trim(), // honeypot
+      website: String(data.get("website") || "").trim(),
     };
+
+    if (payload.website) {
+      setStatus("sent");
+      form.reset();
+      return;
+    }
 
     setStatus("sending");
     setError("");
+    setInfo("");
 
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const json = (await res.json()) as { ok?: boolean; error?: string };
+      // 1) Prefer direct FormSubmit from the browser
+      const fs = await sendViaFormSubmit(payload);
+      const fsMsg = String(fs.message || "").toLowerCase();
 
-      if (!res.ok || !json.ok) {
-        setStatus("error");
-        setError(json.error || "Failed to send message. Please try again.");
+      if (
+        fsMsg.includes("activation") ||
+        fsMsg.includes("activate form")
+      ) {
+        setStatus("activation");
+        setInfo(
+          "Setup email sent. Open Gmail (christopherlee812@gmail.com), find the FormSubmit message, and click “Activate Form”. Then try sending again — messages will arrive after that."
+        );
         return;
       }
 
-      setStatus("sent");
-      form.reset();
-    } catch {
+      if (
+        fs.success === true ||
+        fs.success === "true" ||
+        fsMsg.includes("successfully")
+      ) {
+        setStatus("sent");
+        form.reset();
+        return;
+      }
+
+      // 2) Fallback to our API route
+      const api = await sendViaApi(payload);
+      if (api.needsActivation) {
+        setStatus("activation");
+        setInfo(
+          api.message ||
+            "Check your Gmail for a FormSubmit activation link, then try again."
+        );
+        return;
+      }
+      if (api.ok) {
+        setStatus("sent");
+        form.reset();
+        return;
+      }
+
       setStatus("error");
       setError(
-        "Network error. Please try again or email christopherlee812@gmail.com."
+        api.error ||
+          fs.message ||
+          "Could not send yet. Check Gmail for a FormSubmit activation email, click Activate Form, then try again."
       );
+    } catch {
+      // 3) Last fallback: API only
+      try {
+        const api = await sendViaApi(payload);
+        if (api.needsActivation) {
+          setStatus("activation");
+          setInfo(
+            api.message ||
+              "Check your Gmail for a FormSubmit activation link, then try again."
+          );
+          return;
+        }
+        if (api.ok) {
+          setStatus("sent");
+          form.reset();
+          return;
+        }
+        setStatus("error");
+        setError(api.error || "Failed to send. Please try again.");
+      } catch {
+        setStatus("error");
+        setError("Network error. Please try again in a moment.");
+      }
     }
   }
 
@@ -95,11 +204,11 @@ export default function Contact() {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="card space-y-4">
+          <form onSubmit={handleSubmit} className="card relative space-y-4">
             <h3 className="text-lg font-semibold text-white">Contact Form</h3>
 
-            {/* Honeypot — hidden from users */}
-            <div className="absolute -left-[9999px] opacity-0" aria-hidden>
+            {/* Honeypot */}
+            <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0" aria-hidden>
               <label htmlFor="website">Website</label>
               <input
                 id="website"
@@ -165,6 +274,11 @@ export default function Contact() {
             {status === "sent" && (
               <p className="text-center text-sm text-emerald-400">
                 Message sent successfully! I&apos;ll get back to you soon.
+              </p>
+            )}
+            {status === "activation" && (
+              <p className="text-center text-sm text-amber-300" role="status">
+                {info}
               </p>
             )}
             {status === "error" && (
