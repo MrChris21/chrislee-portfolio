@@ -157,9 +157,9 @@ export default function Portfolio() {
             </div>
           </div>
 
-          {/* Old placement: end of content, scrolls with page; text centered */}
-          <footer className="mt-6 flex w-full items-center justify-center pb-4">
-            <p className="text-center text-xs text-[var(--muted)]">
+          {/* Scrolls with content; centered in the content column */}
+          <footer className="mt-6 w-full pb-6 text-center">
+            <p className="mx-auto block w-full text-center text-xs leading-relaxed text-[var(--muted)]">
               © {new Date().getFullYear()} {site.name}. Built with Next.js
             </p>
           </footer>
