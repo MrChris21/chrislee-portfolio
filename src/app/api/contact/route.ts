@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+const TO_EMAIL = "christopherlee812@gmail.com";
+
 type Body = {
   name?: string;
   email?: string;
@@ -40,62 +42,80 @@ export async function POST(request: Request) {
       );
     }
 
-    const accessKey =
-      process.env.WEB3FORMS_ACCESS_KEY ||
-      process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    const originHeader =
+      request.headers.get("origin") ||
+      request.headers.get("referer") ||
+      "https://chrislee.site";
 
-    if (!accessKey) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error:
-            "Contact form is not configured yet. Missing Web3Forms access key.",
-        },
-        { status: 503 }
-      );
+    let siteOrigin = "https://chrislee.site";
+    try {
+      siteOrigin = new URL(originHeader).origin;
+    } catch {
+      /* keep default */
     }
 
-    const res = await fetch("https://api.web3forms.com/submit", {
+    const res = await fetch(`https://formsubmit.co/ajax/${TO_EMAIL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Origin: siteOrigin,
+        Referer: `${siteOrigin}/`,
       },
       body: JSON.stringify({
-        access_key: accessKey,
-        subject: `Portfolio contact from ${name}`,
-        from_name: "Chris Lee Portfolio",
         name,
         email,
         message,
-        replyto: email,
+        _subject: `Portfolio contact from ${name}`,
+        _replyto: email,
+        _template: "table",
+        _captcha: "false",
       }),
     });
 
-    const data = (await res.json().catch(() => ({}))) as {
-      success?: boolean;
-      message?: string;
-    };
-
-    if (!res.ok || !data.success) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error:
-            data.message ||
-            "Failed to send message via Web3Forms. Please try again.",
-        },
-        { status: 502 }
-      );
+    const raw = await res.text();
+    let data: { success?: string | boolean; message?: string } = {};
+    try {
+      data = JSON.parse(raw) as typeof data;
+    } catch {
+      data = { message: raw };
     }
 
-    return NextResponse.json({ ok: true });
+    const msg = String(data.message || "").toLowerCase();
+
+    if (msg.includes("activation") || msg.includes("activate form")) {
+      return NextResponse.json({
+        ok: true,
+        needsActivation: true,
+        message:
+          "Check Gmail for a FormSubmit email and click Activate Form. After that, messages will arrive automatically.",
+      });
+    }
+
+    const success =
+      data.success === true ||
+      data.success === "true" ||
+      msg.includes("successfully");
+
+    if (success) {
+      return NextResponse.json({ ok: true });
+    }
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          data.message ||
+          "Could not send yet. If this is the first time, check Gmail for a FormSubmit activation link.",
+      },
+      { status: 502 }
+    );
   } catch (err) {
     console.error("contact api error", err);
     return NextResponse.json(
       {
         ok: false,
-        error: "Temporary send error. Please try again in a moment.",
+        error: "Temporary send error. Please try again.",
       },
       { status: 500 }
     );
