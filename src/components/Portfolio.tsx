@@ -158,8 +158,7 @@ export default function Portfolio() {
           </div>
 
           <footer className="mt-6 pb-4 text-center text-xs text-[var(--muted)]">
-            © {new Date().getFullYear()} {site.name}. Built with Next.js · Deployed
-            on Vercel.
+            © {new Date().getFullYear()} {site.name}. Built with Next.js
           </footer>
         </main>
       </div>
