@@ -23,12 +23,21 @@ export const metadata: Metadata = {
     "Philippines",
   ],
   authors: [{ name: "Christopher D. Lee Jr." }],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     title: "Mr. Chris Lee — Full Stack Web Developer",
     description:
       "Full Stack Web Developer portfolio — WordPress, front-end, back-end, and creative tools.",
     type: "website",
     locale: "en_US",
+    images: [{ url: "/images/avatar.webp", width: 560, height: 560, alt: "Mr. Chris Lee" }],
   },
 };
 
