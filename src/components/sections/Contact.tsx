@@ -5,77 +5,23 @@ import { products, site } from "@/data/content";
 import { IconMail, IconMapPin, IconPhone } from "../Icons";
 import Image from "next/image";
 
-type Status = "idle" | "sending" | "sent" | "error" | "activation";
-
-const TO_EMAIL = "christopherlee812@gmail.com";
+type Status = "idle" | "sending" | "sent" | "error";
 
 export default function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
-  const [info, setInfo] = useState("");
-
-  async function sendViaFormSubmit(payload: {
-    name: string;
-    email: string;
-    message: string;
-  }) {
-    // Client-side FormSubmit works best (browser Origin)
-    const res = await fetch(`https://formsubmit.co/ajax/${TO_EMAIL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        name: payload.name,
-        email: payload.email,
-        message: payload.message,
-        _subject: `Portfolio contact from ${payload.name}`,
-        _replyto: payload.email,
-        _template: "table",
-        _captcha: "false",
-      }),
-    });
-
-    const data = (await res.json().catch(() => ({}))) as {
-      success?: string | boolean;
-      message?: string;
-    };
-    return data;
-  }
-
-  async function sendViaApi(payload: {
-    name: string;
-    email: string;
-    message: string;
-    website: string;
-  }) {
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    return (await res.json()) as {
-      ok?: boolean;
-      error?: string;
-      needsActivation?: boolean;
-      message?: string;
-    };
-  }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
 
-    const payload = {
-      name: String(data.get("name") || "").trim(),
-      email: String(data.get("email") || "").trim(),
-      message: String(data.get("message") || "").trim(),
-      website: String(data.get("website") || "").trim(),
-    };
+    const name = String(data.get("name") || "").trim();
+    const email = String(data.get("email") || "").trim();
+    const message = String(data.get("message") || "").trim();
+    const website = String(data.get("website") || "").trim(); // honeypot
 
-    if (payload.website) {
+    if (website) {
       setStatus("sent");
       form.reset();
       return;
@@ -83,79 +29,61 @@ export default function Contact() {
 
     setStatus("sending");
     setError("");
-    setInfo("");
 
     try {
-      // 1) Prefer direct FormSubmit from the browser
-      const fs = await sendViaFormSubmit(payload);
-      const fsMsg = String(fs.message || "").toLowerCase();
+      // Prefer server route (keeps key server-side when WEB3FORMS_ACCESS_KEY is set)
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message, website }),
+      });
+      const json = (await res.json()) as { ok?: boolean; error?: string };
 
-      if (
-        fsMsg.includes("activation") ||
-        fsMsg.includes("activate form")
-      ) {
-        setStatus("activation");
-        setInfo(
-          "Setup email sent. Open Gmail (christopherlee812@gmail.com), find the FormSubmit message, and click “Activate Form”. Then try sending again — messages will arrive after that."
-        );
-        return;
-      }
-
-      if (
-        fs.success === true ||
-        fs.success === "true" ||
-        fsMsg.includes("successfully")
-      ) {
+      if (res.ok && json.ok) {
         setStatus("sent");
         form.reset();
         return;
       }
 
-      // 2) Fallback to our API route
-      const api = await sendViaApi(payload);
-      if (api.needsActivation) {
-        setStatus("activation");
-        setInfo(
-          api.message ||
-            "Check your Gmail for a FormSubmit activation link, then try again."
-        );
-        return;
-      }
-      if (api.ok) {
-        setStatus("sent");
-        form.reset();
-        return;
-      }
-
-      setStatus("error");
-      setError(
-        api.error ||
-          fs.message ||
-          "Could not send yet. Check Gmail for a FormSubmit activation email, click Activate Form, then try again."
-      );
-    } catch {
-      // 3) Last fallback: API only
-      try {
-        const api = await sendViaApi(payload);
-        if (api.needsActivation) {
-          setStatus("activation");
-          setInfo(
-            api.message ||
-              "Check your Gmail for a FormSubmit activation link, then try again."
-          );
-          return;
-        }
-        if (api.ok) {
+      // Client-side Web3Forms fallback (access key is public by design)
+      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+      if (accessKey) {
+        const w3 = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            access_key: accessKey,
+            subject: `Portfolio contact from ${name}`,
+            from_name: "Chris Lee Portfolio",
+            name,
+            email,
+            message,
+            replyto: email,
+            botcheck: false,
+          }),
+        });
+        const w3json = (await w3.json()) as {
+          success?: boolean;
+          message?: string;
+        };
+        if (w3.ok && w3json.success) {
           setStatus("sent");
           form.reset();
           return;
         }
         setStatus("error");
-        setError(api.error || "Failed to send. Please try again.");
-      } catch {
-        setStatus("error");
-        setError("Network error. Please try again in a moment.");
+        setError(w3json.message || json.error || "Failed to send message.");
+        return;
       }
+
+      setStatus("error");
+      setError(json.error || "Failed to send message. Please try again.");
+    } catch {
+      setStatus("error");
+      setError("Network error. Please try again in a moment.");
     }
   }
 
@@ -207,7 +135,6 @@ export default function Contact() {
           <form onSubmit={handleSubmit} className="card relative space-y-4">
             <h3 className="text-lg font-semibold text-white">Contact Form</h3>
 
-            {/* Honeypot */}
             <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0" aria-hidden>
               <label htmlFor="website">Website</label>
               <input
@@ -274,11 +201,6 @@ export default function Contact() {
             {status === "sent" && (
               <p className="text-center text-sm text-emerald-400">
                 Message sent successfully! I&apos;ll get back to you soon.
-              </p>
-            )}
-            {status === "activation" && (
-              <p className="text-center text-sm text-amber-300" role="status">
-                {info}
               </p>
             )}
             {status === "error" && (

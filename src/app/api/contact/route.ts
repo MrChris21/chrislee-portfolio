@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-const TO_EMAIL = "christopherlee812@gmail.com";
-
 type Body = {
   name?: string;
   email?: string;
@@ -42,112 +40,62 @@ export async function POST(request: Request) {
       );
     }
 
-    const origin =
-      request.headers.get("origin") ||
-      request.headers.get("referer") ||
-      "https://chrislee.site";
+    const accessKey =
+      process.env.WEB3FORMS_ACCESS_KEY ||
+      process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
 
-    const siteOrigin = (() => {
-      try {
-        return new URL(origin).origin;
-      } catch {
-        return "https://chrislee.site";
-      }
-    })();
-
-    // Optional: Web3Forms (client/server friendly with free access key)
-    const web3Key = process.env.WEB3FORMS_ACCESS_KEY;
-    if (web3Key) {
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
+    if (!accessKey) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "Contact form is not configured yet. Missing Web3Forms access key.",
         },
-        body: JSON.stringify({
-          access_key: web3Key,
-          subject: `Portfolio contact from ${name}`,
-          from_name: name,
-          name,
-          email,
-          message,
-          replyto: email,
-        }),
-      });
-      const data = (await res.json()) as { success?: boolean; message?: string };
-      if (data.success) {
-        return NextResponse.json({ ok: true });
-      }
-      // fall through to FormSubmit if Web3Forms fails
+        { status: 503 }
+      );
     }
 
-    // FormSubmit — needs browser-like Origin; first use requires inbox activation
-    const res = await fetch(`https://formsubmit.co/ajax/${TO_EMAIL}`, {
+    const res = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Origin: siteOrigin,
-        Referer: `${siteOrigin}/`,
       },
       body: JSON.stringify({
+        access_key: accessKey,
+        subject: `Portfolio contact from ${name}`,
+        from_name: "Chris Lee Portfolio",
         name,
         email,
         message,
-        _subject: `Portfolio contact from ${name}`,
-        _replyto: email,
-        _template: "table",
-        _captcha: "false",
-        _honey: "",
+        replyto: email,
       }),
     });
 
-    const rawText = await res.text();
-    let data: { success?: string | boolean; message?: string } = {};
-    try {
-      data = JSON.parse(rawText) as typeof data;
-    } catch {
-      data = { message: rawText };
+    const data = (await res.json().catch(() => ({}))) as {
+      success?: boolean;
+      message?: string;
+    };
+
+    if (!res.ok || !data.success) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            data.message ||
+            "Failed to send message via Web3Forms. Please try again.",
+        },
+        { status: 502 }
+      );
     }
 
-    const msg = String(data.message || "").toLowerCase();
-    const successFlag =
-      data.success === true ||
-      data.success === "true" ||
-      msg.includes("the form was submitted successfully") ||
-      msg.includes("successfully");
-
-    // First-time activation flow
-    if (msg.includes("activation") || msg.includes("activate form")) {
-      return NextResponse.json({
-        ok: true,
-        needsActivation: true,
-        message:
-          "Almost ready! Check christopherlee812@gmail.com for a FormSubmit activation email and click Activate Form. After that, messages will arrive automatically.",
-      });
-    }
-
-    if (successFlag) {
-      return NextResponse.json({ ok: true });
-    }
-
-    // Last-resort: return clear error (not the old generic dead-end)
-    return NextResponse.json(
-      {
-        ok: false,
-        error:
-          data.message ||
-          "Email service is finishing setup. Please try again in a minute, or check Gmail for a FormSubmit activation link.",
-      },
-      { status: 502 }
-    );
+    return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("contact api error", err);
     return NextResponse.json(
       {
         ok: false,
-        error:
-          "Temporary send error. Please try again, or check Gmail for a FormSubmit activation link.",
+        error: "Temporary send error. Please try again in a moment.",
       },
       { status: 500 }
     );
