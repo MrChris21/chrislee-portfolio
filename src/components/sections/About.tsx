@@ -32,7 +32,7 @@ export default function About() {
             👋 Hi, I&apos;m <strong className="text-[var(--accent)]">{site.fullName}</strong>
           </p>
           <p className="text-base font-medium text-[var(--accent)]">{site.title}</p>
-          <p>{site.about}</p>
+          <p className="whitespace-pre-line">{site.about}</p>
         </div>
 
         <ul className="mt-8 grid gap-3 sm:grid-cols-2">

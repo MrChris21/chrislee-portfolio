@@ -21,7 +21,11 @@ export const site = {
     { name: "Messenger", url: "https://www.messenger.com/", icon: "messenger" },
     { name: "WhatsApp", url: "https://www.whatsapp.com/", icon: "whatsapp" },
   ],
-  about: `I am a Full-Stack Developer & AI Specialist with a strong background in designing, developing, and maintaining dynamic and user-friendly web applications. Proficient in both front-end and back-end technologies, I excel at creating responsive, efficient, and visually appealing websites that deliver seamless user experiences. With expertise in modern frameworks, databases, AI integration, and deployment processes, I am passionate about building innovative digital solutions that meet both user needs and business goals. My work is guided by attention to detail, problem-solving skills, and a commitment to continuous learning in the ever-evolving tech landscape.`,
+  about: `I design, build, and scale modern web applications that combine strong functionality with excellent user experiences. From responsive front-ends to robust back-ends and intelligent AI features, I deliver complete solutions that help businesses work smarter and grow faster.
+
+I handle the full development process — clean code, databases, secure APIs, deployment, and performance optimization. What sets my work apart is the practical integration of AI, including automation, smart features, and personalization that give products a real competitive edge.
+
+I focus on clarity, speed, security, and long-term maintainability. Clients value clear communication, proactive problem-solving, and work that is ready for real users. Always learning and staying current with modern tools, I turn ideas into polished, production-ready digital products.`,
   avatar: "/images/avatar.webp",
   logo: "/images/logo.webp",
 };
