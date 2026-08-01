@@ -30,7 +30,6 @@ export default function Portfolio() {
   function goTo(tab: TabId) {
     setActive(tab);
     setMobileOpen(false);
-    // Scroll only the main content panel (desktop) or window (mobile)
     const panel = document.getElementById("main-scroll");
     if (panel) {
       panel.scrollTo({ top: 0, behavior: "smooth" });
@@ -102,71 +101,71 @@ export default function Portfolio() {
       )}
 
       {/*
-        Desktop: fixed-height row — profile stays put, main content scrolls.
-        Mobile: normal document flow.
+        One scroll area for all tabs.
+        Profile sticks on desktop; footer spans full width (profile + content) and centers.
       */}
-      <div className="mx-auto flex h-full max-w-6xl flex-col gap-6 px-4 py-6 md:py-10 lg:flex-row lg:items-stretch lg:gap-8 lg:overflow-hidden lg:px-6 lg:py-8">
-        {/* Desktop profile — fixed in place (does not scroll with content) */}
-        <aside className="hidden shrink-0 lg:flex lg:w-[300px] lg:flex-col lg:self-start">
-          <div className="w-full max-w-[300px]">
-            <Sidebar onContact={() => goTo("contact")} />
-          </div>
-        </aside>
+      <div
+        id="main-scroll"
+        className="mx-auto h-full max-w-6xl overflow-y-auto overflow-x-hidden px-4 py-6 md:py-10 lg:px-6 lg:py-8"
+      >
+        <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-8">
+          {/* Profile — sticky, does not scroll away while content moves */}
+          <aside className="hidden lg:block lg:self-start lg:sticky lg:top-8">
+            <div className="w-full max-w-[300px]">
+              <Sidebar onContact={() => goTo("contact")} />
+            </div>
+          </aside>
 
-        {/* Main panel — independent scroll on desktop */}
-        <main
-          id="main-scroll"
-          className="min-w-0 flex-1 lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain lg:pr-1"
-        >
-          <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-2xl">
-            {/* Tabs stay at top of the scrolling panel */}
-            <nav className="sticky top-0 z-10 hidden border-b border-[var(--border)] bg-[var(--card)]/95 backdrop-blur-md lg:block">
-              <ul className="flex flex-wrap">
-                {tabs.map((t) => (
-                  <li key={t.id}>
-                    <button
-                      type="button"
-                      onClick={() => goTo(t.id)}
-                      className={`relative px-6 py-4 text-sm font-semibold transition ${
-                        active === t.id
-                          ? "text-[var(--accent)]"
-                          : "text-[var(--muted)] hover:text-white"
-                      }`}
-                    >
-                      {t.label}
-                      {active === t.id && (
-                        <span className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-[var(--accent)]" />
-                      )}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+          {/* Content card — all tabs */}
+          <div className="min-w-0">
+            <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-2xl">
+              <nav className="sticky top-0 z-10 hidden border-b border-[var(--border)] bg-[var(--card)]/95 backdrop-blur-md lg:block">
+                <ul className="flex flex-wrap">
+                  {tabs.map((t) => (
+                    <li key={t.id}>
+                      <button
+                        type="button"
+                        onClick={() => goTo(t.id)}
+                        className={`relative px-6 py-4 text-sm font-semibold transition ${
+                          active === t.id
+                            ? "text-[var(--accent)]"
+                            : "text-[var(--muted)] hover:text-white"
+                        }`}
+                      >
+                        {t.label}
+                        {active === t.id && (
+                          <span className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full bg-[var(--accent)]" />
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
 
-            {/* Content */}
-            <div className="p-5 md:p-8 lg:p-10">
-              {active === "about" && <About />}
-              {active === "resume" && (
-                <ResumePasswordGate>
-                  <Resume />
-                </ResumePasswordGate>
-              )}
-              {active === "works" && <Works />}
-              {active === "blog" && <Blog />}
-              {active === "contact" && <Contact />}
+              <div className="p-5 md:p-8 lg:p-10">
+                {active === "about" && <About />}
+                {active === "resume" && (
+                  <ResumePasswordGate>
+                    <Resume />
+                  </ResumePasswordGate>
+                )}
+                {active === "works" && <Works />}
+                {active === "blog" && <Blog />}
+                {active === "contact" && <Contact />}
+              </div>
             </div>
           </div>
 
           {/*
-            Scrolls with content (not fixed).
-            On desktop, shifts left so it spans profile + content and centers under both.
+            Footer on EVERY tab — spans profile + content columns, text centered.
+            Scrolls into view at the bottom (not fixed to the viewport).
           */}
-          <footer className="mt-6 w-full pb-6 text-center lg:-ml-[calc(300px+2rem)] lg:w-[calc(100%+300px+2rem)]">
+          <footer className="col-span-full mt-2 flex w-full items-center justify-center pb-4">
             <p className="text-center text-xs leading-relaxed text-[var(--muted)]">
               © {new Date().getFullYear()} {site.name}. Built with Next.js
             </p>
           </footer>
-        </main>
+        </div>
       </div>
     </div>
   );
