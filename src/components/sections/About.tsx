@@ -9,6 +9,7 @@ import {
 } from "@/data/content";
 import {
   IconMonitor,
+  IconNextjs,
   IconServer,
   IconShield,
   IconWordPress,
@@ -17,6 +18,7 @@ import {
 const serviceIcons: Record<string, React.ReactNode> = {
   monitor: <IconMonitor className="h-9 w-9 text-[var(--accent)]" />,
   server: <IconServer className="h-9 w-9 text-[var(--accent)]" />,
+  nextjs: <IconNextjs className="h-9 w-9 text-[var(--accent)]" />,
   wordpress: <IconWordPress className="h-9 w-9 text-[var(--accent)]" />,
   shield: <IconShield className="h-9 w-9 text-[var(--accent)]" />,
 };

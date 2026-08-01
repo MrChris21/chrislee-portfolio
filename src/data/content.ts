@@ -44,6 +44,12 @@ export const services = [
     icon: "server",
   },
   {
+    title: "Next.js",
+    description:
+      "Fast, SEO-friendly React apps with App Router, server components, and production-ready deployment.",
+    icon: "nextjs",
+  },
+  {
     title: "WordPress Development",
     description:
       "Custom WordPress builds that improve business websites and workflows.",
