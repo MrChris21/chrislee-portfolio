@@ -1,61 +1,110 @@
-# Connect chrislee.site to Vercel
+# Point chrislee.site to this new portfolio (leave Hostinger WordPress)
 
-Your Next.js portfolio is already deployed and linked to this domain in Vercel.
-You only need to update DNS at your domain registrar (currently Hostinger parking DNS).
+Your **new** Next.js site is already connected in Vercel:
 
-## Live URLs (already working)
+| Item | Value |
+|------|--------|
+| Vercel project | `portfolio-app` |
+| Apex domain | `chrislee.site` |
+| WWW | `www.chrislee.site` |
+| Preview URL | https://portfolio-app-sandy-phi.vercel.app |
 
-- Production: https://portfolio-app-sandy-phi.vercel.app
-- GitHub: https://github.com/MrChris21/chrislee-portfolio
-- Vercel project: portfolio-app (domains: `chrislee.site`, `www.chrislee.site`)
+Right now **DNS still points at Hostinger WordPress**, so visitors see the old site.
 
-## Option A — Recommended (A records)
+---
 
-In your domain DNS panel (Hostinger, Namecheap, GoDaddy, etc.):
+## What you need to change (Hostinger only)
 
-| Type | Name / Host | Value           | TTL  |
-|------|-------------|-----------------|------|
-| A    | `@`         | `216.198.79.1`  | 3600 |
-| A    | `@`         | `64.29.17.1`    | 3600 |
-| CNAME| `www`       | `cname.vercel-dns.com` | 3600 |
+You do **not** need to “move the domain between Vercel projects” again — Vercel is ready.  
+You only need to **stop Hostinger from serving the old portfolio** and **point DNS to Vercel**.
 
-Some Vercel setups also accept a single A record:
+### Step 1 — Open Hostinger DNS
 
-| Type | Name | Value        |
-|------|------|--------------|
-| A    | `@`  | `76.76.21.21`|
+1. Log in: https://hpanel.hostinger.com  
+2. Go to **Domains** → **chrislee.site**  
+3. Open **DNS / DNS Zone Editor**
 
-Use the values shown in:
+### Step 2 — Remove old WordPress / Hostinger records
+
+Delete or edit these if they exist (they send traffic to the old site):
+
+- **A** records for `@` that point to Hostinger IPs (e.g. `77.x`, `147.x`, `148.x`, `193.x`)
+- **CNAME** for `www` pointing to `*.hstgr.net` or Hostinger CDN
+- Any **A** / **AAAA** for `www` pointing at Hostinger
+
+Keep other records you still need (email MX, etc.) unless you know you should remove them.
+
+### Step 3 — Add Vercel records
+
+| Type | Name | Value | TTL |
+|------|------|--------|-----|
+| **A** | `@` | `76.76.21.21` | 3600 or default |
+| **CNAME** | `www` | `cname.vercel-dns.com` | 3600 or default |
+
+If Vercel’s domain page shows **two A records** instead, use those:
+
+| Type | Name | Value |
+|------|------|--------|
+| **A** | `@` | `216.198.79.1` |
+| **A** | `@` | `64.29.17.1` |
+| **CNAME** | `www` | `cname.vercel-dns.com` |
+
+Confirm exact values here:  
 https://vercel.com/mrchris21s-projects/portfolio-app/settings/domains
 
-## Option B — Vercel nameservers
+### Step 4 — Optional: Hostinger “Website” / WordPress
 
-Change nameservers at your registrar to:
+If Hostinger still has a website assigned to `chrislee.site`:
+
+1. **Websites** → find the WordPress portfolio  
+2. Either **pause**, **delete**, or **change domain** of that hosting package  
+   so Hostinger is not fighting for the domain  
+
+(You can keep files as backup; just don’t keep DNS pointing at Hostinger.)
+
+### Step 5 — Wait and verify
+
+1. Wait **5–60 minutes** (sometimes up to 24–48h)  
+2. Open https://chrislee.site — you should see the **new** Next.js portfolio (binary rain, Resume/CV, etc.)  
+3. Open https://www.chrislee.site — same site  
+4. SSL is automatic on Vercel after DNS is correct  
+
+Check status:
+
+```bash
+cd "/Users/saint_chris/Documents/Files/My Portfolio:VC/portfolio-app"
+vercel domains verify chrislee.site
+```
+
+You want: **DNS Configuration ✔ Valid**
+
+---
+
+## Optional: Vercel nameservers instead of A records
+
+In Hostinger → Domains → **Nameservers** → Custom:
 
 - `ns1.vercel-dns.com`
 - `ns2.vercel-dns.com`
 
-## After DNS is updated
+Then Hostinger DNS editor is no longer used for this domain; Vercel manages DNS.
 
-1. Wait 5 minutes to a few hours (up to 48h in rare cases).
-2. SSL certificates are issued automatically by Vercel.
-3. Check status:
-   ```bash
-   vercel domains verify chrislee.site
-   ```
-4. Visit https://chrislee.site and https://www.chrislee.site
+---
 
-## Current problem (why it is not live yet)
+## Subdomains (safe to keep)
 
-Your domain currently uses Hostinger parking nameservers:
+| Subdomain | Project |
+|-----------|---------|
+| `pos.chrislee.site` | `flores-pos` (your POS app) |
 
-- `ns1.dns-parking.com`
-- `ns2.dns-parking.com`
+Changing apex/`www` does **not** remove `pos.chrislee.site` if that record stays in DNS.
 
-and points to non-Vercel IPs. That is why Vercel reports **Invalid Configuration**.
+---
 
-## Tip if the site still shows the old WordPress host
+## Quick checklist
 
-- Clear CDN/cache at the old host.
-- Remove any A/CNAME records that still point to Hostinger WordPress hosting.
-- Keep only the Vercel records above.
+- [ ] Vercel project `portfolio-app` has `chrislee.site` + `www` (already done)
+- [ ] Hostinger A `@` → Vercel (`76.76.21.21` or the two A records Vercel shows)
+- [ ] Hostinger CNAME `www` → `cname.vercel-dns.com`
+- [ ] Old Hostinger WordPress A/CNAME removed
+- [ ] Wait for DNS → new site loads on https://chrislee.site
