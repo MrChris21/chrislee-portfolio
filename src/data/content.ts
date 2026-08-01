@@ -9,6 +9,7 @@ export const site = {
   address: "Jeddah, Saudi Arabia",
   freelance: "Available",
   roles: [
+    "Full-Stack Developer & AI Specialist",
     "Back-end Developer",
     "Front-end Developer",
     "Freelancer",
