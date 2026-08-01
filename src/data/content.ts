@@ -121,6 +121,11 @@ export const tools = [
     image: "/tools/vscode.svg",
     url: "https://code.visualstudio.com/",
   },
+  {
+    name: "Xcode",
+    image: "/tools/xcode.svg",
+    url: "https://developer.apple.com/xcode/",
+  },
   { name: "Figma", image: "/tools/figma.png", url: "https://www.figma.com/" },
   {
     name: "WordPress",
