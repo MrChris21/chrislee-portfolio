@@ -157,9 +157,12 @@ export default function Portfolio() {
             </div>
           </div>
 
-          {/* Scrolls with content; centered in the content column */}
-          <footer className="mt-6 w-full pb-6 text-center">
-            <p className="mx-auto block w-full text-center text-xs leading-relaxed text-[var(--muted)]">
+          {/*
+            Scrolls with content (not fixed).
+            On desktop, shifts left so it spans profile + content and centers under both.
+          */}
+          <footer className="mt-6 w-full pb-6 text-center lg:-ml-[calc(300px+2rem)] lg:w-[calc(100%+300px+2rem)]">
+            <p className="text-center text-xs leading-relaxed text-[var(--muted)]">
               © {new Date().getFullYear()} {site.name}. Built with Next.js
             </p>
           </footer>
