@@ -10,14 +10,15 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Mr. Chris Lee — Full Stack Web Developer",
+  title: "Mr. Chris Lee — Full-Stack Developer & AI Specialist",
   description:
-    "Portfolio of Christopher D. Lee Jr. — Full Stack Web Developer specializing in WordPress, front-end, and back-end development.",
+    "Portfolio of Christopher D. Lee Jr. — Full-Stack Developer & AI Specialist specializing in modern web apps, AI integration, WordPress, front-end, and back-end development.",
   keywords: [
     "Chris Lee",
     "Web Developer",
     "WordPress",
     "Full Stack",
+    "AI Specialist",
     "Portfolio",
     "Jeddah",
     "Philippines",
@@ -32,9 +33,9 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
   openGraph: {
-    title: "Mr. Chris Lee — Full Stack Web Developer",
+    title: "Mr. Chris Lee — Full-Stack Developer & AI Specialist",
     description:
-      "Full Stack Web Developer portfolio — WordPress, front-end, back-end, and creative tools.",
+      "Full-Stack Developer & AI Specialist portfolio — modern web apps, AI tools, WordPress, front-end, and back-end.",
     type: "website",
     locale: "en_US",
     images: [{ url: "/images/avatar.webp", width: 560, height: 560, alt: "Mr. Chris Lee" }],

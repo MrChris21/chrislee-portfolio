@@ -31,6 +31,7 @@ export default function About() {
           <p className="text-lg text-white">
             👋 Hi, I&apos;m <strong className="text-[var(--accent)]">{site.fullName}</strong>
           </p>
+          <p className="text-base font-medium text-[var(--accent)]">{site.title}</p>
           <p>{site.about}</p>
         </div>
 

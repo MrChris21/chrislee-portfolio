@@ -1,7 +1,7 @@
 export const site = {
   name: "Mr. Chris Lee",
   fullName: "Christopher D. Lee Jr.",
-  title: "Full Stack Web Developer",
+  title: "Full-Stack Developer & AI Specialist",
   email: "Christopherlee812@gmail.com",
   phone: "09278222173 / 0567759607",
   age: "27",
@@ -21,7 +21,7 @@ export const site = {
     { name: "Messenger", url: "https://www.messenger.com/", icon: "messenger" },
     { name: "WhatsApp", url: "https://www.whatsapp.com/", icon: "whatsapp" },
   ],
-  about: `I am a Full Stack Web Developer with a strong background in designing, developing, and maintaining dynamic and user-friendly web applications. Proficient in both front-end and back-end technologies, I excel at creating responsive, efficient, and visually appealing websites that deliver seamless user experiences. With expertise in modern frameworks, databases, and deployment processes, I am passionate about building innovative digital solutions that meet both user needs and business goals. My work is guided by attention to detail, problem-solving skills, and a commitment to continuous learning in the ever-evolving tech landscape.`,
+  about: `I am a Full-Stack Developer & AI Specialist with a strong background in designing, developing, and maintaining dynamic and user-friendly web applications. Proficient in both front-end and back-end technologies, I excel at creating responsive, efficient, and visually appealing websites that deliver seamless user experiences. With expertise in modern frameworks, databases, AI integration, and deployment processes, I am passionate about building innovative digital solutions that meet both user needs and business goals. My work is guided by attention to detail, problem-solving skills, and a commitment to continuous learning in the ever-evolving tech landscape.`,
   avatar: "/images/avatar.webp",
   logo: "/images/logo.webp",
 };
